@@ -1,8 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
-
+import userRouter from "./routes/user.route.js";
+import authRouter from "./routes/auth.route.js";
 mongoose
-    .connect("mongodb+srv://ishan:ishan@cluster0.dmvcjur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    .connect("mongodb+srv://ishan:ishan@cluster0.dmvcjur.mongodb.net/airline-database?retryWrites=true&w=majority&appName=Cluster0")
     .then(()=>{
         console.log("Connected to MongoDB");
     })
@@ -11,7 +12,11 @@ mongoose
     });
 
 const app = express();
+app.use(express.json());
 
 app.listen(3000,()=>{
     console.log("Server listening to port 3000!!!");
 });
+
+app.use('/test',userRouter);
+app.use('/api/auth',authRouter);
