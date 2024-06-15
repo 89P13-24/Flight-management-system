@@ -7,6 +7,8 @@ import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import Header from './components/Header';
 import PrivateRoute from './components/PrivateRoute';
+import CreateFlight from './pages/CreateFlight';
+import PrivateAdmin from './components/PrivateAdmin';
 
 export default function App() {
   return (
@@ -20,7 +22,9 @@ export default function App() {
       <Route element={<PrivateRoute/>}>
         <Route path='/profile' element = {<Profile/>}></Route>
       </Route>
-      
+      <Route element={<PrivateAdmin/>}>
+        <Route path='/create-flight' element = {<CreateFlight/>}></Route>
+      </Route>
     </Routes>
     </BrowserRouter>
   )

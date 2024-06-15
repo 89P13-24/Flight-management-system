@@ -19,6 +19,7 @@ import {
   signOutUserSuccess,
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -184,6 +185,10 @@ export default function Profile() {
         >
           {loading ? 'Loading...' : 'Update'}
         </button>
+        {currentUser.admin ? <Link className='bg-green-700 p-3 rounded-lg uppercase text-white text-center hover:opacity-95' to='/create-flight'>
+          create flight
+          </Link>:""}
+        
       </form>
       <div className='flex justify-between mt-5'>
       <span
@@ -194,7 +199,7 @@ export default function Profile() {
         </span>
         <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign out</span>
       </div>
-
+          
       <p className='text-red-700 mt-5'>{error ? error : ''}</p>
       <p className='text-green-700 mt-5'>
         {updateSuccess ? 'User is updated successfully!' : ''}
