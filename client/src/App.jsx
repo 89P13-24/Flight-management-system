@@ -10,6 +10,9 @@ import PrivateRoute from './components/PrivateRoute';
 import CreateFlight from './pages/CreateFlight';
 import PrivateAdmin from './components/PrivateAdmin';
 
+import UpdateListing from './pages/UpdateListing';
+import Listing from './pages/Listing';
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -19,11 +22,13 @@ export default function App() {
       <Route path='/about' element = {<About/>}></Route>
       <Route path='/sign-in' element = {<SignIn/>}></Route>
       <Route path='/sign-up' element = {<SignUp/>}></Route>
+      <Route path='/listing/:id' element = {<Listing/>}></Route>
       <Route element={<PrivateRoute/>}>
         <Route path='/profile' element = {<Profile/>}></Route>
       </Route>
       <Route element={<PrivateAdmin/>}>
         <Route path='/create-flight' element = {<CreateFlight/>}></Route>
+        <Route path='/update-listing/:listingId' element = {<UpdateListing/>}></Route>
       </Route>
     </Routes>
     </BrowserRouter>

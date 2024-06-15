@@ -254,7 +254,7 @@ export default function Profile() {
                   <FaPlaneDeparture/>
                   <span className='underline font-semibold'>{listing.airline}</span>
                 </div>
-                <div className='flex flex-col sm:flex-row justify-between items-center'> 
+                <div className='flex flex-col sm:flex-row justify-between items-center mt-1'> 
                   <div className='flex flex-col'>
                     <p className='text-center'>{listing.departureAirport}</p>
                     <p className='text-center'>{listing.departureDate.split('T')[1].substring(0,5)}</p>
@@ -272,14 +272,16 @@ export default function Profile() {
                     <p className='text-center'>{listing.arrivalDate.toString().split('T')[0]}</p>
                     
                   </div>
-                  <div className='flex flex-col'>
+                  <div className='flex flex-col items-center'>
                     <p>{listing.price}</p>
                     <p className='text-sm text-slate-500'>Per Adult</p>
                     
                   </div>
                 </div>
                 <div className='flex flex-row justify-between mt-2'>
-                  <button className='text-blue-700 pl-3'>Edit</button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className='text-green-700 uppercase'>Edit</button>
+                </Link>
                   <button
                   onClick={() => handleListingDelete(listing._id)}
                   className='text-red-700 uppercase'
