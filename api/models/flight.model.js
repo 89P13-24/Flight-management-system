@@ -36,7 +36,11 @@ const flightSchema = new mongoose.Schema({
     availableSeats:{
         type:Number,
         required: true,
-    }
+    },
+    userRef:{
+        type:String,
+        required:true,
+    },
 },{timestamps:true});
 
 const Flight = mongoose.model('Flight',flightSchema);

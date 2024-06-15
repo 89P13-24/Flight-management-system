@@ -1,8 +1,10 @@
 import express from 'express';
-import { CreateFlight } from '../controllers/flight.controller.js';
+import { CreateFlight, DeleteFlight, DisplayFlights } from '../controllers/flight.controller.js';
+import { verifyToken } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
-router.post('/create',CreateFlight);
-
+router.post('/create',verifyToken,CreateFlight);
+router.get('/display/:id',DisplayFlights);
+router.delete('/delete/:id',verifyToken,DeleteFlight);
 export default router;

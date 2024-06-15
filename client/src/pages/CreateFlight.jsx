@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 export default function CreateFlight() {
+    const {currentUser} = useSelector((state) => state.user);
     const [formData, setFormData] = useState({
         airline:'',
         flightNumber:'',
@@ -18,19 +20,35 @@ export default function CreateFlight() {
     //console.log(formData);
     const handleChange = (e)=>{
         setFormData({...formData, [e.target.id] : e.target.value});
-        
+        // if(formData.arrivalDate && formData.departureDate){
+        //     const d = formData.arrivalDate.getTime() - formData.departureDate.getTime();
+        //     console.log(d);
+        //     if(d>=0){
+        //         setFormData({...formData,duration:Math.round(d/60)});
+        //     }
+        // }
     }
     const handleSubmit = async (e)=>{
         e.preventDefault();
         try{
+            console.log(formData.arrivalDate - formData.departureDate);
             setLoading(true);
             setError(false);
+            if(formData.arrivalDate <= formData.departureDate){
+                setLoading(false);
+                setError("Arrival Date must be greater than departure date");
+                return;
+            }
+            
             const res = await fetch('/api/flight/create',{
                 method: 'POST',
                 headers:{
                     'Content-Type' : 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    userRef: currentUser._id,
+                }),
             })
             const data = await res.json();
             setLoading(false);
@@ -78,7 +96,7 @@ export default function CreateFlight() {
                 </div>
                 <div>
                     <label htmlFor="duration" className='sr-only'>Duration</label>
-                    <input type="number" id="duration" placeholder='Duration (minutes)' className='border p-3 rounded-lg w-80' min="0" onChange={handleChange} value={formData.duration ? formData.duration : true} required/>
+                    <input type="number" id="duration" placeholder='Duration (minutes)' className='border p-3 rounded-lg w-80' min="1" onChange={handleChange} value={formData.duration ? formData.duration : true} required/>
                 </div>
                 <button disabled={loading} type="submit" className='bg-slate-700 w-full p-3 rounded-xl uppercase text-white hover:opacity-95 disabled:opacity-80'>{loading ? 'Creating..' : 'Create a flight'}</button>
                 {error && <p className='text-red-700'>{error}</p>}

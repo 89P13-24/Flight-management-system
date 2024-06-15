@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import {FaPlaneDeparture ,FaPlane} from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react';
 import {
   getDownloadURL,
@@ -20,14 +21,17 @@ import {
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
+  const [ShowError, setShowError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
 
   // firebase storage
@@ -126,8 +130,41 @@ export default function Profile() {
       dispatch(signOutUserFailure(data.message));
     }
   }
+  const handleShowFlights = async ()=>{
+    try{
+      setShowError(false);
+      const res = await fetch(`api/flight/display/${currentUser._id}`);
+      const data = await res.json();
+      if(data.success === false){
+        ShowError(true);
+        return;
+      }
+      setUserListings(data);
+    }catch(error){
+      setShowError(true);
+    }
+  }
+
+  const handleListingDelete = async (listingId) => {
+    try {
+      const res = await fetch(`/api/flight/delete/${listingId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
-    <div className='p-3 max-w-lg mx-auto'>
+    <div className='p-3 max-w-xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
@@ -204,6 +241,57 @@ export default function Profile() {
       <p className='text-green-700 mt-5'>
         {updateSuccess ? 'User is updated successfully!' : ''}
       </p>
+      {currentUser.admin ? <button onClick = {handleShowFlights} className='text-green-700 w-full'>Show Listed Flights</button> : ""}
+      <p className='text-red-700 mt-5'>
+        {ShowError ? 'Error showing listings' : ''}
+      </p>
+    
+      {userListings && userListings.length>0 &&
+        <div className='flex flex-col gap-2 '>
+            {userListings.map((listing)=>(
+              <div key = {listing._id} className='border rounded-md cursor-pointer hover:shadow-md'>
+                <div className='flex gap-4 items-center'>
+                  <FaPlaneDeparture/>
+                  <span className='underline font-semibold'>{listing.airline}</span>
+                </div>
+                <div className='flex flex-col sm:flex-row justify-between items-center'> 
+                  <div className='flex flex-col'>
+                    <p className='text-center'>{listing.departureAirport}</p>
+                    <p className='text-center'>{listing.departureDate.split('T')[1].substring(0,5)}</p>
+                    <p className='text-center'>{listing.departureDate.toString().split('T')[0]}</p>
+                    
+                  </div>
+                  <div className='flex flex-col text-center'>
+                  <FaPlane className='text-green-700'/>
+                  <span>{Math.round(listing.duration/60)}h {listing.duration%60}m</span>
+                  </div>
+                  
+                  <div className='flex flex-col'>
+                    <p className='text-center'>{listing.arrivalAirport}</p>
+                    <p className='text-center'>{listing.arrivalDate.split('T')[1].substring(0,5)}</p>
+                    <p className='text-center'>{listing.arrivalDate.toString().split('T')[0]}</p>
+                    
+                  </div>
+                  <div className='flex flex-col'>
+                    <p>{listing.price}</p>
+                    <p className='text-sm text-slate-500'>Per Adult</p>
+                    
+                  </div>
+                </div>
+                <div className='flex flex-row justify-between mt-2'>
+                  <button className='text-blue-700 pl-3'>Edit</button>
+                  <button
+                  onClick={() => handleListingDelete(listing._id)}
+                  className='text-red-700 uppercase'
+                >
+                  Delete
+                </button>
+                </div>
+              </div>
+        ))}
+
+        </div>
+            }
     </div>
   );
 }
